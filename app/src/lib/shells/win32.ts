@@ -7,6 +7,7 @@ import { IFoundShell } from './found-shell'
 export enum Shell {
   Cmd = 'Command Prompt',
   PowerShell = 'PowerShell',
+  PowerShellCore = 'PowerShell Core',
   Hyper = 'Hyper',
   GitBash = 'Git Bash',
 }
@@ -20,6 +21,10 @@ export function parse(label: string): Shell {
 
   if (label === Shell.PowerShell) {
     return Shell.PowerShell
+  }
+
+  if (label === Shell.PowerShellCore) {
+    return Shell.PowerShellCore
   }
 
   if (label === Shell.Hyper) {
@@ -133,11 +138,12 @@ export async function launch(
 ): Promise<void> {
   const shell = foundShell.shell
 
-  if (shell === Shell.PowerShell) {
+  if (shell === Shell.PowerShell || shell === Shell.PowerShellCore) {
     const psCommand = `"Set-Location -LiteralPath '${path}'"`
+    const psName = shell === Shell.PowerShellCore ? 'pwsh' : 'powershell'
     const cp = spawn(
       'START',
-      ['powershell', '-NoExit', '-Command', psCommand],
+      [psName, '-NoExit', '-Command', psCommand],
       {
         shell: true,
         cwd: path,
